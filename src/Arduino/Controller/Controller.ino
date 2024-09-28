@@ -8,25 +8,61 @@
 #include <Servo.h>
 #include <Adafruit_NeoPixel.h>
 
-const float ALPHA = 0.5; // 필터 계수
 
-const int maxSaturation = 300;
+////////////////////////////////////////////////////////////////////
+// PARAMETERS
+const int maxSaturation = 450;
 const int maxFrontSaturation = 250; // Front Thruster max값
 const int maxDiffSaturation = 350; // L R 차이 최대값
-const long interval = 500; // LED 깜빡이는 주기 [ms]
 
-
+const float LPF_Alpha = 0.5; // 필터 계수
 const int LEDBright = 50;
 
+////////////////////////////////////////////////////////////////////
+// STATE MANAGE
+enum Mode {
+    MANUAL,
+    AUTONOMOUS,
+    STOP
+};
+
+Mode CurrentMode = STOP;
+
+////////////////////////////////////////////////////////////////////
+// Servo
 Servo TL, TR, TF;  // Thruster 
 
+void ServoSetting() {
+
+  TL.attach(5);
+  TR.attach(6);
+  TF.attach(7);
+
+  TL.writeMicroseconds(1500);
+  TR.writeMicroseconds(1500);
+  TF.writeMicroseconds(1500);
+}
+
+////////////////////////////////////////////////////////////////////
 // tx12
 int sensorPin[] = {0, 8, 9, 10, 11, 12, 13};
 int channel[] = {0, 0, 0, 0, 0, 0, 0};
 
-unsigned long previousMillis = 0;
-bool ledState = false;
+void tx12() {
+  for(int i = 1; i < 7; i++) {
+    channel[i] = pulseIn(sensorPin[i], HIGH) - 1490;
+    if(channel[i] < 40 && channel[i] > -40) channel[i] = 0;
+    
+    if (i == 3) {
+      channel[i] = map(channel[i], -500, 500, -35, 35);
+    } else {
+      channel[i] = constrain(channel[i], -500, 500);
+    }
+  }
+}
 
+////////////////////////////////////////////////////////////////////
+// ROS 
 ros::NodeHandle nh;
 int data[] = {0, 0, 0};
 
@@ -35,32 +71,47 @@ void messageCallback(const std_msgs::Int16MultiArray &sub_msg) {
     data[i] = sub_msg.data[i];
   }
 }
-ros::Subscriber<std_msgs::Int16MultiArray> sub("control", messageCallback); // 일단 보류
-#define PIN        3 // NeoPixel 핀
-#define NUMPIXELS 50 // NeoPixel 수
-Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+ros::Subscriber<std_msgs::Int16MultiArray> sub("control", messageCallback);
 
-// int previousFilteredL = 0;
-// int previousFilteredR = 0;
-// int previousFilteredF = 0;
+////////////////////////////////////////////////////////////////////
+// LED 
+long LEDPeriod = 500; // LED 깜빡이는 주기 [ms]
+unsigned long previousMillis = 0;
+bool LEDState = false;
+int LEDPixelNum = 50;
+int LEDPin = 3;
+Adafruit_NeoPixel pixels(LEDPixelNum, LEDPin, LEDPixelNum + NEO_KHZ800);
 
-// int filteredL = 0;
-// int filteredR = 0;
-// int filteredF = 0;
+void setLEDBrightness(int red, int blue, int green) {
+    for (int i = 0; i < LEDPixelNum; i++) {
+        pixels.setPixelColor(i, pixels.Color(red, blue, green));
+    }
+    pixels.show(); // LED 색 업데이트
+}
+
+////////////////////////////////////////////////////////////////////
+// LPF
+int previousFilteredL = 0;
+int previousFilteredR = 0;
+int previousFilteredF = 0;
+
+int filteredL = 0;
+int filteredR = 0;
+int filteredF = 0;
 
 
-// void lowPassFilter(int l, int r, int f) {
-//   filteredL = ALPHA * l + (1 - ALPHA) * previousFilteredL;
-//   filteredR = ALPHA * r + (1 - ALPHA) * previousFilteredR;
-//   filteredF = ALPHA * f + (1 - ALPHA) * previousFilteredF;
+void lowPassFilter(int l, int r, int f) {
+  filteredL = LPF_Alpha * l + (1 - LPF_Alpha) * previousFilteredL;
+  filteredR = LPF_Alpha * r + (1 - LPF_Alpha) * previousFilteredR;
+  filteredF = LPF_Alpha * f + (1 - LPF_Alpha) * previousFilteredF;
   
-//   previousFilteredL = filteredL;
-//   previousFilteredR = filteredR;
-//   previousFilteredF = filteredF;
-// }
+  previousFilteredL = filteredL;
+  previousFilteredR = filteredR;
+  previousFilteredF = filteredF;
+}
 
-
-// servo 함수에서는 원하는 PWM값을 입력 (-500 to 500)
+////////////////////////////////////////////////////////////////////
+// Thuster 원하는 PWM값을 입력 (-500 to 500)
 void thrust(int l = 0, int r = 0, int f = 0) {
   l = constrain(l, -maxSaturation, maxSaturation);
   r = constrain(r, -maxSaturation, maxSaturation);
@@ -82,49 +133,22 @@ void thrust(int l = 0, int r = 0, int f = 0) {
   r = constrain(r, -maxSaturation, maxSaturation);
   f = constrain(f, -maxFrontSaturation, maxFrontSaturation);
 
-  // lowPassFilter(l, r, f);
+  lowPassFilter(l, r, f);
 
-  // TL.writeMicroseconds(1500 + filteredL); 
-  // TR.writeMicroseconds(1500 + filteredR); 
-  // TF.writeMicroseconds(1500 + filteredF); 
-
-
-
-  TL.writeMicroseconds(1500 + l); 
-  TR.writeMicroseconds(1500 + r); 
-  TF.writeMicroseconds(1500 + f); 
-
+  TL.writeMicroseconds(1500 + filteredL); 
+  TR.writeMicroseconds(1500 + filteredR); 
+  TF.writeMicroseconds(1500 + filteredF); 
 }
 
-// Servo 객체와 선을 등록하고 기본상태로 초기화
-void setting() {
+////////////////////////////////////////////////////////////////////
 
-  TL.attach(5);
-  TR.attach(6);
-  TF.attach(7);
 
-  TL.writeMicroseconds(1500);
-  TR.writeMicroseconds(1500);
-  TF.writeMicroseconds(1500);
-}
-
-void tx12() {
-  for(int i = 1; i < 7; i++) {
-    channel[i] = pulseIn(sensorPin[i], HIGH) - 1490;
-    if(channel[i] < 40 && channel[i] > -40) channel[i] = 0;
-    
-    if (i == 3) {
-      channel[i] = map(channel[i], -500, 500, -35, 35);
-    } else {
-      channel[i] = constrain(channel[i], -500, 500);
-    }
-  }
-}
+////////////////////////////////////////////////////////////////////
 
 void setup() {
   Serial.begin(57600);
-  setting();
   Serial.setTimeout(50);
+  ServoSetting();
   nh.initNode();
   nh.subscribe(sub);
   pixels.begin(); // NeoPixel 초기화
@@ -134,82 +158,43 @@ void setup() {
 void loop() {
   tx12();
   unsigned long currentMillis = millis();
-
   int tl, tr, tf;
-  bool automode = false;
 
-  
-  Serial.print("\t");
-  Serial.print(channel[1]);
-  Serial.print("\t");
-  Serial.print(channel[2]);
-  Serial.print("\t");
-  Serial.print(channel[3]);
-  Serial.print("\t");
-  Serial.print(channel[4]);
-  Serial.print("\t");
-  Serial.print(channel[5]);
-  Serial.print("\t");
-  Serial.print(channel[6]);
-  Serial.print("\t");
+  if (channel[5] < -100)      CurrentMode = MANUAL;
+  else if (channel[5] > 100)  CurrentMode = AUTONOMOUS;
+  else                        CurrentMode = STOP;
 
- 
-  Serial.print(int(-channel[2] - channel[1]));
-  Serial.print("\t");
-  Serial.print(int(-channel[2] + channel[1]));
-  Serial.print("\t");
-  Serial.print(channel[6]);
-  Serial.print("\n");
-  
-  if (channel[5] < -100) { // 수동모드
-    automode = false;
+  ////////////////////////////////////////////////////////////////////
+  if (CurrentMode == MANUAL) {
     tl = int(-channel[2] - channel[1]);
     tr = int(-channel[2] + channel[1]);
     tf = -channel[1];
 
-    // 초록색으로 설정
-    for(int i = 0; i < NUMPIXELS; i++) {
-      pixels.setPixelColor(i, pixels.Color(0, 0, LEDBright)); // 초록색
-    }
-    pixels.show(); // LED 색 업데이트
+    setLEDBrightness(0, 0, LEDBright);
   } 
-  else if (channel[5] > 100) { // 자동모드
-    automode = true;
+  ////////////////////////////////////////////////////////////////////
+  else if (CurrentMode == AUTONOMOUS) {
     tl = -data[0], tr = -data[1], tf = data[2];
 
-    // 일정 시간 간격으로 LED 깜빡이기
-    if (currentMillis - previousMillis >= interval) {
+    if (currentMillis - previousMillis >= LEDPeriod) 
+    {
       previousMillis = currentMillis;
-      ledState = !ledState; // LED 상태 토글
-
-      // 깜빡일 때 노란색으로 설정
-      if (ledState) {
-        for (int i = 0; i < NUMPIXELS; i++) {
-          pixels.setPixelColor(i, pixels.Color(LEDBright, 0, LEDBright)); // 노란색
-        }
-      } else { 
-        for (int i = 0; i < NUMPIXELS; i++) {
-          pixels.setPixelColor(i, pixels.Color(0, 0, 0)); // LED 끄기
-        }
-      }
-      pixels.show(); // LED 상태 업데이트
+      LEDState = !LEDState;
     }
+
+    if (LEDState) setLEDBrightness(LEDBright, 0, LEDBright);
+    else          setLEDBrightness(0, 0, 0);
   } 
-  else { // 정지모드
-    automode = false;
+  ////////////////////////////////////////////////////////////////////
+  else if(CurrentMode = STOP) {
     tl = 0, tr = 0, tf = 0;
-
-    // 빨간색으로 설정
-    for(int i = 0; i < NUMPIXELS; i++) {
-      pixels.setPixelColor(i, pixels.Color(LEDBright, 0, 0)); // 빨간색
-    }
-    pixels.show(); // LED 색 업데이트
+    setLEDBrightness(LEDBright, 0, 0);
   }
+  ////////////////////////////////////////////////////////////////////
 
-  // 모터에 쓰러스터 값 전달
+
   thrust(tl, tr, tf);
-
-  if(automode) {
-    nh.spinOnce(); // 자동모드에서 ROS 메시지 처리
+  if(CurrentMode == AUTONOMOUS) {
+    nh.spinOnce();
   }
 }
