@@ -16,7 +16,7 @@ const int maxFrontSaturation = 250; // Front Thruster max값
 const int maxDiffSaturation = 350; // L R 차이 최대값
 
 const float LPF_Alpha = 0.5; // 필터 계수
-const int LEDBright = 50;
+const int LEDBright = 20;
 
 ////////////////////////////////////////////////////////////////////
 // STATE MANAGE
@@ -82,9 +82,9 @@ int LEDPixelNum = 50;
 int LEDPin = 3;
 Adafruit_NeoPixel pixels(LEDPixelNum, LEDPin, NEO_RGB + NEO_KHZ800);
 
-void setLEDBrightness(int red, int blue, int green) {
+void setLEDBrightness(int red, int green, int blue) {
     for (int i = 0; i < LEDPixelNum; i++) {
-        pixels.setPixelColor(i, pixels.Color(red, blue, green));
+        pixels.setPixelColor(i, pixels.Color(blue, red, green));
     }
     pixels.show(); // LED 색 업데이트
 }
@@ -171,7 +171,7 @@ void loop() {
     tr = int(-channel[2] + channel[1]);
     tf = -channel[1];
 
-    setLEDBrightness(0, 0, LEDBright);
+    setLEDBrightness(0, LEDBright, 0);
   } 
   ////////////////////////////////////////////////////////////////////
   else if (CurrentMode == AUTONOMOUS) {
@@ -184,7 +184,7 @@ void loop() {
       LEDState = !LEDState;
     }
 
-    if (LEDState) setLEDBrightness(LEDBright, 0, LEDBright);
+    if (LEDState) setLEDBrightness(LEDBright, LEDBright, 0);
     else          setLEDBrightness(0, 0, 0);
   } 
   ////////////////////////////////////////////////////////////////////
