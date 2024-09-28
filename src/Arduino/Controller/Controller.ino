@@ -80,7 +80,7 @@ unsigned long previousMillis = 0;
 bool LEDState = false;
 int LEDPixelNum = 50;
 int LEDPin = 3;
-Adafruit_NeoPixel pixels(LEDPixelNum, LEDPin, LEDPixelNum + NEO_KHZ800);
+Adafruit_NeoPixel pixels(LEDPixelNum, LEDPin, NEO_RGB + NEO_KHZ800);
 
 void setLEDBrightness(int red, int blue, int green) {
     for (int i = 0; i < LEDPixelNum; i++) {
@@ -166,6 +166,7 @@ void loop() {
 
   ////////////////////////////////////////////////////////////////////
   if (CurrentMode == MANUAL) {
+    Serial.println("MANUAL");
     tl = int(-channel[2] - channel[1]);
     tr = int(-channel[2] + channel[1]);
     tf = -channel[1];
@@ -174,6 +175,7 @@ void loop() {
   } 
   ////////////////////////////////////////////////////////////////////
   else if (CurrentMode == AUTONOMOUS) {
+    Serial.println("AUTO");
     tl = -data[0], tr = -data[1], tf = data[2];
 
     if (currentMillis - previousMillis >= LEDPeriod) 
@@ -187,6 +189,7 @@ void loop() {
   } 
   ////////////////////////////////////////////////////////////////////
   else if(CurrentMode = STOP) {
+    Serial.println("STOP");
     tl = 0, tr = 0, tf = 0;
     setLEDBrightness(LEDBright, 0, 0);
   }
