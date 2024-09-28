@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+    <!-- HANDSFREE IMU -->
+    <arg name="imu_type" default="a9" doc="imu_type [a9, b9, b6]"/>
+    <node pkg="handsfree_ros_imu" type="hfi_$(arg imu_type)_ros.py" name="imu" output="screen">
+        <param name="port"               type = "str"    value="/dev/ttyUSB0"/>
+        <param name="gra_normalization"  type = "bool"   value="True" if="$(eval imu_type == 'a9')"/>
+    </node>
+
+    <!-- Include NTRIP configuration -->
+    <include file="$(find ublox_gps)/launch/ublox_device.launch">
+    </include>
+
+    <node pkg="ntrip_ros" type="ntripclient.py" name="ntrip_ros" output="screen">
+        <param name="rtcm_topic" value="/ublox_gps/rtcm"/>
+        <param name="ntrip_server" value="RTS1.ngii.go.kr:2101"/>
+        <param name="ntrip_user" value="andy42490"/>
+        <param name="ntrip_pass" value="ngii"/>
+        <param name="ntrip_stream" value="VRS-RTCM31"/>
+        <param name="nmea_gga" value="$GPGGA,114817.301,3621.900,N,12720.789,E,1,12,1.0,0.0,M,0.0,M,,*69"/>
+    </node>
+
+    <!-- <node  name="xsens_mti_node" pkg="xsens_mti_driver" type="xsens_mti_node" output="screen">
+        <rosparam command="load" file="$(find xsens_mti_driver)/param/xsens_mti_node.yaml" />
+        <param name="port" type="str" value="/dev/ttyUSB0"/>
+    </node> -->
+
+    <!-- First GPS Node -->
+    <!-- <include file="$(find ublox_gps)/launch/ublox_zed-f9p_base.launch"/> -->
+
+    <!-- Second GPS Node -->
+    <!-- <include file="$(find ublox_gps)/launch/ublox_zed-f9p_rover.launch"/>  Fixed closing tag -->
+
+    <!-- LiDAR Connect -->
+    <include file="$(find livox_ros_driver2)/launch_ROS1/rviz_MID360.launch"/>
+    
+    <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
+    
+    <node pkg="nodelet" type="nodelet" name="voxel_grid" args="load pcl/VoxelGrid pcl_manager" output="screen">
+        <remap from="~input" to="/livox/lidar" />
+        <rosparam>
+            filter_field_name: z
+            filter_limit_min: -0.5
+            filter_limit_max: 0.5
+            filter_limit_negative: false
+            leaf_size: 0.1
+            downsample_all_data: true
+        </rosparam>
+    </node>
+
+    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+        <remap from="cloud_in" to="/voxel_grid/output"/>
+        <remap from="scan" to="/scan"/>
+        <rosparam>
+            angle_max: 3.14159
+            angle_min: -3.14159
+            max_height: 0.5
+            min_height: -0.5
+            range_min: 0.5
+            use_inf: true
+            inf_epsilon: -1
+        </rosparam>
+    </node>
+
+    <!-- IMU and UTM Nodes -->
+    <node pkg="kaboat2024" type="IMUPublish.py" name="PSI"/>
+    <node pkg="kaboat2024" type="UTMPublish.py" name="UTM"/>
+</launch>

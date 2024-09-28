@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="kaboat2024" type="main.py" name="Main" output="screen"/>
+    <node pkg="kaboat2024" type="PWMPublish.py" name="PWMPublish" output="screen"/>
+</launch>

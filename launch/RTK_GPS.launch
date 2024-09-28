@@ -1,0 +1,8 @@
+<launch>
+  <!-- GPS setup -->
+  <include file="$(find ublox_gps)/launch/ublox_zed-f9p_base.launch"/>
+  <include file="$(find ublox_gps)/launch/ublox_zed-f9p_rover.launch"/>
+
+  <node pkg="kaboat2024" type="IMUPublish.py" name="PSI" output="screen"/>
+  <node pkg="kaboat2024" type="UTMPublish.py" name="UTM"/>
+</launch>

@@ -1,0 +1,39 @@
+<launch>
+    <!-- <node pkg="tf" type="static_transform_publisher" name="tf" args="0 0 0 0 0 0 /map /vehicle 100"  /> -->
+    <node pkg="mapviz" type="mapviz" name="mapviz">
+        <param name="config" value="$(find kaboat2024)/kaboat_mapviz.mvc"/>    
+    </node>
+
+    <node pkg="swri_transform_util" type="initialize_origin.py" name="initialize_origin" >
+        <param name="local_xy_frame" value="/map"/>
+        <param name="local_xy_origin" value="shii"/>
+        <rosparam param="local_xy_origins">
+        [{ name: cnu,
+            latitude: 36.368706,
+            longitude: 127.345411,
+            altitude: 0.0,
+            heading: 0.0},
+
+         { name: shii,
+            latitude: 36.395991,
+            longitude: 127.401794,
+            altitude: 0.0,
+            heading: 0.0},
+            
+         { name: mrl_auto,
+            latitude: 35.0696863,
+            longitude: 128.5789035,
+            altitude: 0.0,
+            heading: 0.0},
+            
+         { name: mrl_tour,
+            latitude: 35.0696253,
+            longitude: 128.5787199,
+            altitude: 0.0,
+            heading: 0.0}]
+        </rosparam>
+        <remap from="fix" to="/RTK_GPS/smc_2000/fix"/>
+    </node>
+    <node pkg="kaboat2024" type="MapvizPosPublish.py" name="PosPublish" output="screen"/>
+    <node pkg="kaboat2024" type="ClickedPosPublish.py" name="ClickPublish" output="screen"/>
+</launch>
