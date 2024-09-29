@@ -4,7 +4,7 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 import numpy as np
 import SETTINGS
-from math import ceil, floor
+from math import ceil, floor, exp
 
 class Boat:
     def __init__(self):
@@ -19,11 +19,13 @@ Goal_Distance = 0
 def normalize_angle(angle): return (angle + 180) % 360 - 180
 
 def cost_func_angle(x):
-        x = abs(x)
-        return 0.01 * x if x <= 10 else 0.1 * (x - 10)
+    # x = abs(x)
+    # return 0.01 * x if x <= 10 else 0.1 * (x - 10)
+    return 1 - exp(- (x / 100) ** 2)
 
 def cost_func_distance(x):
-    return 0 if x > 7 else 10 - 10/7 * x
+    # return 0 if x > 7 else 10 - 10/7 * x
+    return exp(- (x / 3) ** 2)
 
 def calculate_safe_zone(ld):
     safe_zone = [SETTINGS.AVOID_RANGE] * 360

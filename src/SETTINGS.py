@@ -22,7 +22,7 @@ if(isSimulator==False):
     BOAT_WIDTH = 0.4
     AVOID_RANGE = 3
     GAIN_PSI = 1
-    GAIN_DISTANCE = 0
+    GAIN_DISTANCE = 1
     GoalRange = 2
 
     """
