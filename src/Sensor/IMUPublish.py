@@ -10,7 +10,7 @@ from sensor_msgs.msg import Imu
 from geometry_msgs.msg import QuaternionStamped
 from ublox_msgs.msg import NavRELPOSNED
 
-bias = -45
+bias = -45 + 17 + 117 + 47 + 17
 def normalize_angle(angle): return (angle + 180) % 360 - 180
 
 #############

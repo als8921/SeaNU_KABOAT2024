@@ -119,11 +119,7 @@ def Tuning(goal_psi):
 def main():
     ros_init()
     Autonomous(-3,3)
-    Rotate(-90)
-    Wait(3)
-    Autonomous(-25,4)
-    Rotate(90)
-    Wait(3)
+    Autonomous(-28,6)
     Autonomous(-3,3)
     print("MISSION CLEAR")
 
