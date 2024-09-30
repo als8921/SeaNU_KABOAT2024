@@ -124,10 +124,14 @@ def pathplan(boat=Boat(), goal_x=None, goal_y=None):
 
         tauX = 300
     else:
-        tauX_dist = min(4 * Goal_Distance ** 2, 300)
-        tauX_psi = 200 / (abs(psi_error) + 1)
-        tauX = min(tauX_dist + tauX_psi, 500)
-        tauX = 150
+        TauX_Gain_Dist = 0.3
+        TauX_Gain_Angle = 0.7
+        a = 1500
+        b = 4
+        tauX_dist = 1 - exp(-(boat.scan[0] / b) ** 2)   # 1 - e^(-(x/4)^2)
+        tauX_angle = exp(-(psi_error ** 2) / a)         # e^(-(x^2/1500))
+        tauX = 150 + TauX_Gain_Dist * tauX_dist + TauX_Gain_Angle * tauX_angle
+        tauX = min(tauX, 450)
 
     # 목표 웨이포인트 데이터 표시
     if goal_x is not None and goal_y is not None:
