@@ -118,9 +118,29 @@ def Tuning(goal_psi):
 
 def main():
     ros_init()
-    Autonomous(-3,3)
-    Autonomous(-28,6)
-    Autonomous(-3,3)
+    # Autonomous(-4,1)
+    # Autonomous(-28,3)
+    # Autonomous(-4,1)
+    # Autonomous(-28,3)
+    # Autonomous(-4,1)
+    # Autonomous(-28,3)
+    # Autonomous(-4,1)
+    mission_2_index = input("enter index")
+    Autonomous(-4,1)  # mission1 끝나는 지점
+    Autonomous(-28,3) # mission2 시작하는 지점
+
+    if mission_2_index == 1:
+        Autonomous(1,1) # mission2 첫 번째 입구
+        Autonomous(1,1) # mission2 첫 번째 통로 중간
+    elif mission_2_index == 2:
+        Autonomous(2,2) # mission2 두 번째 입구
+        Autonomous(2,2) # mission2 두 번째 통로 중간
+    elif mission_2_index == 3:
+        Autonomous(3,3) # mission3 세 번째 입구
+        Autonomous(3,3) # mission3 세 번째 통로 중간
+    
+    Autonomous(3)
+
     print("MISSION CLEAR")
 
 
