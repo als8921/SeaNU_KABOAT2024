@@ -5,7 +5,7 @@
 #endif
 #include <ros.h>
 #include <std_msgs/Int16MultiArray.h>
-#include <Servo.h>
+#include <Servo.h>                                                         
 #include <Adafruit_NeoPixel.h>
 
 
@@ -49,7 +49,7 @@ int sensorPin[] = {0, 8, 9, 10, 11, 12, 13};
 int channel[] = {0, 0, 0, 0, 0, 0, 0};
 
 void tx12() {
-  for(int i = 1; i < 7; i++) {
+  for(int i = 1; i < 7; i++) {  
     channel[i] = pulseIn(sensorPin[i], HIGH) - 1490;
     if(channel[i] < 40 && channel[i] > -40) channel[i] = 0;
     
@@ -152,6 +152,7 @@ void setup() {
   nh.initNode();
   nh.subscribe(sub);
   pixels.begin(); // NeoPixel 초기화
+  pinMode(4, OUTPUT);
 }
 
 
@@ -163,6 +164,9 @@ void loop() {
   if (channel[5] < -100)      CurrentMode = MANUAL;
   else if (channel[5] > 100)  CurrentMode = AUTONOMOUS;
   else                        CurrentMode = STOP;
+
+  if (channel[6] > 90 && CurrentMode == STOP)   digitalWrite(4, HIGH);
+  else                                          digitalWrite(4, LOW);
 
   ////////////////////////////////////////////////////////////////////
   if (CurrentMode == MANUAL) {
