@@ -102,15 +102,54 @@ def pathplan(boat=Boat(), goal_x=None, goal_y=None):
         tauX = min((Goal_Distance ** 4) + 200, 500)
         print(f"전진 속도 {tauX}")
     else:
-        TauX_Gain_Dist = 0.3
-        TauX_Gain_Angle = 0.7
-        a = 1500
-        b = 4
-        tauX_dist = 1 - exp(-(boat.scan[0] / b) ** 2)   # 1 - e^(-(x/4)^2)
-        tauX_angle = exp(-(psi_error ** 2) / a)         # e^(-(x^2/1500))
-        tauX = 0 + 300 * (TauX_Gain_Dist * tauX_dist + TauX_Gain_Angle * tauX_angle)
-        tauX = min(tauX, 450)
+        # TauX_Gain_Dist = 0.3
+        # TauX_Gain_Angle = 0.7
+        # a = 1500
+        # b = 4
+        # tauX_dist = 1 - exp(-(boat.scan[0] / b) ** 2)   # 1 - e^(-(x/4)^2)
+        # tauX_angle = exp(-(psi_error ** 2) / a)         # e^(-(x^2/1500))
+        # tauX = 0 + 300 * (TauX_Gain_Dist * tauX_dist + TauX_Gain_Angle * tauX_angle)
+        # tauX = min(tauX, 450)
         # tauX = 150
+
+
+        Tx_dist_min = 50
+        Tx_dist_max = 100
+        dist_danger = 1.5
+        dist_safe = 7
+
+        Tx_angle_min = 50
+        Tx_angle_max = 100
+        angle_danger = 45
+
+
+        Dist = boat.scan[0]
+
+        Tx_dist = 0
+        if(Dist < 0):
+            pass
+        elif(Dist >= 0 and Dist <= dist_danger):
+            Tx_dist = (Tx_dist_min/dist_danger) * Dist
+        elif(Dist <= dist_safe):
+            Tx_dist = ((Tx_dist_max - Tx_dist_min) / (dist_safe - dist_danger)) * Dist + Tx_dist_min
+        elif(Dist > dist_safe):
+            Tx_dist = Tx_dist_max
+        
+        Tx_angle = 0
+        Angle = abs(psi_error)
+        if(Angle <= angle_danger):
+            Tx_angle = ((Tx_angle_min - Tx_angle_max) / angle_danger) * Angle + Tx_angle_max
+        elif(Angle > angle_danger):
+            Tx_angle = (Tx_angle_min / (angle_danger - 180)) * (Angle - 180)
+        if(Angle > angle_danger):
+            tauX = Tx_angle
+        else:
+            tauX = Tx_dist + Tx_angle
+
+
+        tauX = min(tauX, 450)
+            
+
 
     # 목표 웨이포인트 데이터 표시
     if goal_x is not None and goal_y is not None:

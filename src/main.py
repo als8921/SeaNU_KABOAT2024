@@ -134,15 +134,15 @@ def main():
     Rotate(-90)
     Wait(2)
 
-    mission_2_index = 3
+    mission_2_index = 1
     if mission_2_index == 1:
-        Autonomous(32.5, 4.9, 0.5) # mission2 첫 번째 입구
+        Autonomous(32, 4.9, 1) # mission2 첫 번째 입구
         Autonomous(17, 4.9, 1.2) # mission2 첫 번째 입구
     elif mission_2_index == 2:
-        Autonomous(32.5, 6.5, 0.5) # mission2 두 번째 입구
+        Autonomous(32, 6.5, 1) # mission2 두 번째 입구
         Autonomous(17, 6.5, 1.2) # mission2 두 번째 입구
     elif mission_2_index == 3:
-        Autonomous(32.5, 8.3, 0.5) # mission3 세 번째 입구
+        Autonomous(32, 8.3, 1) # mission3 세 번째 입구
         Autonomous(17, 8.3, 1.2) # mission3 세 번째 입구
 
     Autonomous(15.5, 6.5)
