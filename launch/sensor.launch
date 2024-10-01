@@ -9,7 +9,7 @@
     </node>
 
     <!-- Include NTRIP configuration -->
-    <include file="$(find ublox_gps)/launch/ublox_device.launch">
+    <!-- <include file="$(find ublox_gps)/launch/ublox_device.launch">
     </include>
 
     <node pkg="ntrip_ros" type="ntripclient.py" name="ntrip_ros" output="screen">
@@ -19,7 +19,7 @@
         <param name="ntrip_pass" value="ngii"/>
         <param name="ntrip_stream" value="VRS-RTCM31"/>
         <param name="nmea_gga" value="$GPGGA,114817.301,3621.900,N,12720.789,E,1,12,1.0,0.0,M,0.0,M,,*69"/>
-    </node>
+    </node> -->
 
     <!-- <node  name="xsens_mti_node" pkg="xsens_mti_driver" type="xsens_mti_node" output="screen">
         <rosparam command="load" file="$(find xsens_mti_driver)/param/xsens_mti_node.yaml" />
@@ -27,10 +27,10 @@
     </node> -->
 
     <!-- First GPS Node -->
-    <!-- <include file="$(find ublox_gps)/launch/ublox_zed-f9p_base.launch"/> -->
+    <include file="$(find ublox_gps)/launch/ublox_zed-f9p_base.launch"/>
 
     <!-- Second GPS Node -->
-    <!-- <include file="$(find ublox_gps)/launch/ublox_zed-f9p_rover.launch"/>  Fixed closing tag -->
+    <include file="$(find ublox_gps)/launch/ublox_zed-f9p_rover.launch"/>
 
     <!-- LiDAR Connect -->
     <include file="$(find livox_ros_driver2)/launch_ROS1/rviz_MID360.launch"/>
@@ -57,7 +57,7 @@
             angle_min: -3.14159
             max_height: 0.5
             min_height: -0.5
-            range_min: 0.5
+            range_min: 0.3
             use_inf: true
             inf_epsilon: -1
         </rosparam>

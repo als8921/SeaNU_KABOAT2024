@@ -15,7 +15,7 @@ import Control.AutonomousModule as AutonomousModule
 
 class Boat:
     def __init__(self):
-        self.position = [0, 0]
+        self.position = [10000000, 10000000]
         self.psi = 0
         self.scan = [0] * 360
 
@@ -65,7 +65,7 @@ def ros_init():
     ts = message_filters.ApproximateTimeSynchronizer([gps_sub, imu_sub], queue_size=10, slop=0.1, allow_headerless=True)
     ts.registerCallback(lambda gps_data, imu_data: (CallBack.gps_callback(gps_data), CallBack.imu_callback(imu_data)))
 
-def Autonomous(goal_x,goal_y):
+def Autonomous(goal_x,goal_y, goal_range = SETTINGS.GoalRange):
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
         loginfoOnce(f"[Autonomous Mode] [{goal_x:.2f}, {goal_y:.2f}] Start")
@@ -73,7 +73,7 @@ def Autonomous(goal_x,goal_y):
 
         path = AutonomousModule.pathplan(boat, goal_x, goal_y)
 
-        if AutonomousModule.goal_passed(boat, goal_x, goal_y, SETTINGS.GoalRange):
+        if AutonomousModule.goal_passed(boat, goal_x, goal_y, goal_range):
 
             command_publish.publish(Float32MultiArray(data=[0, 0]))
             rospy.loginfo(f"[Autonomous Mode] [{goal_x:.2f}, {goal_y:.2f}] Arrived")
@@ -105,7 +105,7 @@ def Wait(wait_time):
 
 
 def Tuning(goal_psi):
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(5)
     while not rospy.is_shutdown():
         path = AutonomousModule.rotate(boat, goal_psi)
 
@@ -118,28 +118,33 @@ def Tuning(goal_psi):
 
 def main():
     ros_init()
-    # Autonomous(-4,1)
+    # Tuning(-80)
     # Autonomous(-28,3)
-    # Autonomous(-4,1)
-    # Autonomous(-28,3)
-    # Autonomous(-4,1)
-    # Autonomous(-28,3)
-    # Autonomous(-4,1)
-    mission_2_index = input("enter index")
-    Autonomous(-4,1)  # mission1 끝나는 지점
-    Autonomous(-28,3) # mission2 시작하는 지점
+    Autonomous(-1.3   ,   1.0)
+    Rotate(0)
+    Wait(2)
+    Autonomous(-1.4 ,   8)
+    Rotate(-80)
+    Wait(2)
 
-    if mission_2_index == 1:
-        Autonomous(1,1) # mission2 첫 번째 입구
-        Autonomous(1,1) # mission2 첫 번째 통로 중간
-    elif mission_2_index == 2:
-        Autonomous(2,2) # mission2 두 번째 입구
-        Autonomous(2,2) # mission2 두 번째 통로 중간
-    elif mission_2_index == 3:
-        Autonomous(3,3) # mission3 세 번째 입구
-        Autonomous(3,3) # mission3 세 번째 통로 중간
+    # mission_2_index = 1
+    # if mission_2_index == 1:
+    #     Autonomous(-7.30337766878074, 5.358475111424923, 0.5) # mission2 첫 번째 입구
+    #     # Autonomous(1,1) # mission2 첫 번째 통로 중간
+    # elif mission_2_index == 2:
+    #     Autonomous(-7.3383296389947645, 8.665818718262017, 0.5) # mission2 두 번째 입구
+    #     # Autonomous(2,2) # mission2 두 번째 통로 중간
+    # elif mission_2_index == 3:
+    # Autonomous(-6.9172664429061115, 10.256747249513865, 0.5) # mission3 세 번째 입구
+    #     # Autonomous(3,3) # mission3 세 번째 통로 중간
+
+    Autonomous(-18.1309832977131, 8.089949678163975)
+    Wait(2)
+    Autonomous(-31.58, 8.42)
+    Wait(2)
+    Autonomous(-30.82, 2.49)
     
-    Autonomous(3)
+    # Autonomous(3)
 
     print("MISSION CLEAR")
 

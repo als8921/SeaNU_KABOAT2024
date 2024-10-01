@@ -29,8 +29,8 @@ def callback(data):
 
 def listener():
     rospy.init_node('GPStoUTM_Node', anonymous=True)
-    sub1 = rospy.Subscriber('/ublox_gps/fix', NavSatFix, callback)
-    # sub1 = rospy.Subscriber('/smc_2000/fix', NavSatFix, callback)
+    # sub1 = rospy.Subscriber('/ublox_gps/fix', NavSatFix, callback)
+    sub1 = rospy.Subscriber('/smc_2000/fix', NavSatFix, callback)
     rospy.spin()
 
 if __name__ == '__main__':

@@ -10,7 +10,7 @@ from sensor_msgs.msg import Imu
 from geometry_msgs.msg import QuaternionStamped
 from ublox_msgs.msg import NavRELPOSNED
 
-bias = -45 + 17 + 117 + 47 + 17
+bias = 0
 def normalize_angle(angle): return (angle + 180) % 360 - 180
 
 #############
@@ -29,14 +29,13 @@ def callback(msg):
 
 ##############################IMU로 heading검출
 
-# pre_head=0
-# def HEADcallback(msg):
-#     global pre_head
-#     head = normalize_angle(float(msg.relPosHeading)/100000+bias)
-#     # if head==90:
-#     #     head=pre_head
-#     # pre_head=head
-#     print(head)
+pre_head = -90
+def HEADcallback(msg):
+    global pre_head
+    if(msg.relPosHeading != 0):
+        head = normalize_angle(float(msg.relPosHeading)/100000+bias)        
+        print(head)
+        pub.publish(Float32(data = head))
 
 
 
@@ -44,6 +43,7 @@ if __name__ == '__main__':
     rospy.init_node("Heading_Node")
     pub = rospy.Publisher('KABOAT/Heading', Float32, queue_size=100)
     # rospy.Subscriber('/filter/quaternion', QuaternionStamped, callback)
-    rospy.Subscriber('/handsfree/imu', Imu, callback)
-    # rospy.Subscriber('/smc_plus/navrelposned',NavRELPOSNED, HEADcallback)
+    # rospy.Subscriber('/handsfree/imu', Imu, callback)
+    # rospy.Subscriber('/imu/data', Imu, callback)
+    rospy.Subscriber('/smc_plus/navrelposned',NavRELPOSNED, HEADcallback)
     rospy.spin()
