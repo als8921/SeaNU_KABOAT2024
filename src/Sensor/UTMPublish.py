@@ -18,10 +18,7 @@ def callback(data):
     relative_x = utm_x - ref_x
     relative_y = utm_y - ref_y
     
-    print("GPS : ", data.longitude, data.latitude)
     print("UTM : ", utm_x, utm_y)
-    print("Relative UTM : ", relative_x, relative_y)
-    print()
     
     UTMdata = Float64MultiArray()
     UTMdata.data = [relative_x, relative_y]  # 상대 좌표 저장
