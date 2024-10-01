@@ -67,6 +67,7 @@ def ros_init():
 
 def Autonomous(goal_x,goal_y, goal_range = SETTINGS.GoalRange):
     rate = rospy.Rate(10)
+    rospy.loginfo(f"[{goal_x}, {goal_y}]  AUTONOMOUS MODE START")
     while not rospy.is_shutdown():
         loginfoOnce(f"[Autonomous Mode] [{goal_x:.2f}, {goal_y:.2f}] Start")
         
@@ -81,10 +82,12 @@ def Autonomous(goal_x,goal_y, goal_range = SETTINGS.GoalRange):
         else:
             command_publish.publish(Float32MultiArray(data=path))
         rate.sleep()
+    rospy.loginfo(f"[{goal_x}, {goal_y}]  AUTONOMOUS MODE FINISH")
 
 
 def Rotate(goal_psi):
     rate = rospy.Rate(10)
+    rospy.loginfo(f"{goal_psi}[deg] Rotate START")
     while not rospy.is_shutdown():
         path = AutonomousModule.rotate(boat, goal_psi)
 
@@ -96,16 +99,22 @@ def Rotate(goal_psi):
         
         rate.sleep()
     
+    rospy.loginfo(f"{goal_psi}[deg] Rotate FINISH")
+    
 
 def Wait(wait_time):
     rate = rospy.Rate(10)
+    rospy.loginfo(f"{wait_time}[s] WAIT START")
     for _ in range(10 * wait_time):
         command_publish.publish(Float32MultiArray(data=[0,0]))
         rate.sleep()
 
+    rospy.loginfo(f"{wait_time}[s] WAIT FINISH")
+
 
 def Tuning(goal_psi):
     rate = rospy.Rate(5)
+    rospy.loginfo(f"{goal_psi}[deg]  Tuning START")
     while not rospy.is_shutdown():
         path = AutonomousModule.rotate(boat, goal_psi)
 
@@ -118,35 +127,36 @@ def Tuning(goal_psi):
 
 def main():
     ros_init()
-    # Tuning(-80)
-    # Autonomous(-28,3)
-    Autonomous(-1.3   ,   1.0)
+    Autonomous(33, 1.5)
     Rotate(0)
     Wait(2)
-    Autonomous(-1.4 ,   8)
-    Rotate(-80)
+    Autonomous(33, 6.5, 0.5)
+    Rotate(-90)
     Wait(2)
 
-    # mission_2_index = 1
-    # if mission_2_index == 1:
-    #     Autonomous(-7.30337766878074, 5.358475111424923, 0.5) # mission2 첫 번째 입구
-    #     # Autonomous(1,1) # mission2 첫 번째 통로 중간
-    # elif mission_2_index == 2:
-    #     Autonomous(-7.3383296389947645, 8.665818718262017, 0.5) # mission2 두 번째 입구
-    #     # Autonomous(2,2) # mission2 두 번째 통로 중간
-    # elif mission_2_index == 3:
-    # Autonomous(-6.9172664429061115, 10.256747249513865, 0.5) # mission3 세 번째 입구
-    #     # Autonomous(3,3) # mission3 세 번째 통로 중간
+    mission_2_index = 3
+    if mission_2_index == 1:
+        Autonomous(32.5, 4.9, 0.5) # mission2 첫 번째 입구
+        Autonomous(17, 4.9, 1.2) # mission2 첫 번째 입구
+    elif mission_2_index == 2:
+        Autonomous(32.5, 6.5, 0.5) # mission2 두 번째 입구
+        Autonomous(17, 6.5, 1.2) # mission2 두 번째 입구
+    elif mission_2_index == 3:
+        Autonomous(32.5, 8.3, 0.5) # mission3 세 번째 입구
+        Autonomous(17, 8.3, 1.2) # mission3 세 번째 입구
 
-    Autonomous(-18.1309832977131, 8.089949678163975)
+    Autonomous(15.5, 6.5)
+    Rotate(-90)
     Wait(2)
-    Autonomous(-31.58, 8.42)
+    Autonomous(0, 6.5)
+    Rotate(180)
     Wait(2)
-    Autonomous(-30.82, 2.49)
+    Autonomous(0, 0)
+    Rotate(90)
+    print("MISSION CLEAR")
     
     # Autonomous(3)
 
-    print("MISSION CLEAR")
 
 
 

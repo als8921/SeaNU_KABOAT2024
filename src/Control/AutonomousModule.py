@@ -12,8 +12,6 @@ class Boat:
         self.psi = 0
         self.scan = [0] * 360
         
-Goal_Psi = 0
-Goal_Distance = 0
 
 
 def normalize_angle(angle): return (angle + 180) % 360 - 180
@@ -66,31 +64,6 @@ def calculate_optimal_psi_d(ld, safe_ld, goal_psi):
     return sorted(theta_list, key=lambda x: x[1])[0][0]
 
 
-def Final_cost(ld, safe_ld, goal_psi):
-    """
-    Cost함수를 적용하여 각도별 Cost를 계산
-    목적지 까지의 각도와 각도별 LaserScan 데이터에 대한 함수 사용
-
-    Args:
-        LaserScan ld
-        Float[] safe_ld
-        Float goal_psi
-
-    Returns:
-        Cost가 가장 낮은 각도 리턴
-    """
-    theta_list = [[0, 10000]]
-
-    for i in range(-180, 180):
-        if safe_ld[i] > 0:
-            cost = (SETTINGS.GAIN_PSI * cost_func_angle(i - goal_psi) + 
-                    SETTINGS.GAIN_DISTANCE * cost_func_distance(ld[i]))
-            theta_list.append(cost)
-        else:
-            theta_list.append(11110)
-    theta_list.pop(0)
-    return theta_list
-
 def pathplan(boat=Boat(), goal_x=None, goal_y=None):
     """
     LaserScan 데이터를 바탕으로 최적의 TauX, psi_e 값을 찾는 함수
@@ -103,8 +76,20 @@ def pathplan(boat=Boat(), goal_x=None, goal_y=None):
     Returns:
         [psi_error, tauX]
     """
-    global Goal_Psi, Goal_Distance
-    print(Goal_Psi, Goal_Distance)
+    Goal_Psi = 0
+    Goal_Distance = 0
+
+
+    dx = goal_x - boat.position[0]
+    dy = goal_y - boat.position[1]
+
+
+    Goal_Psi = np.arctan2(dx, dy) * 180 / np.pi - boat.psi
+    Goal_Psi = normalize_angle(Goal_Psi)
+    Goal_Distance = np.sqrt(np.power(dx, 2) + np.power(dy, 2))
+
+
+
     if len(boat.scan) == 0:
         return [0, 0]
 
@@ -113,17 +98,9 @@ def pathplan(boat=Boat(), goal_x=None, goal_y=None):
     
     
     ## TauX를 계산하는 부분
-    if goal_check():
-        psi_error = Goal_Psi
-        if psi_error < 30:
-            tauX = min((Goal_Distance ** 3) + 120, 500)
-        else:
-            tauX_dist = min(3 * boat.scan[0] ** 2, 300)
-            tauX_psi = 200 / (abs(psi_error) + 1)
-            tauX = min(tauX_dist + tauX_psi, 500)
-
-        tauX = 450
-        print("장애물 없음")
+    if goal_check(boat, Goal_Distance, Goal_Psi):
+        tauX = min((Goal_Distance ** 4) + 200, 500)
+        print(f"전진 속도 {tauX}")
     else:
         TauX_Gain_Dist = 0.3
         TauX_Gain_Angle = 0.7
@@ -131,20 +108,12 @@ def pathplan(boat=Boat(), goal_x=None, goal_y=None):
         b = 4
         tauX_dist = 1 - exp(-(boat.scan[0] / b) ** 2)   # 1 - e^(-(x/4)^2)
         tauX_angle = exp(-(psi_error ** 2) / a)         # e^(-(x^2/1500))
-        tauX = 100 + 300 * (TauX_Gain_Dist * tauX_dist + TauX_Gain_Angle * tauX_angle)
+        tauX = 0 + 300 * (TauX_Gain_Dist * tauX_dist + TauX_Gain_Angle * tauX_angle)
         tauX = min(tauX, 450)
         # tauX = 150
 
     # 목표 웨이포인트 데이터 표시
     if goal_x is not None and goal_y is not None:
-        dx = goal_x - boat.position[0]
-        dy = goal_y - boat.position[1]
-
-
-        Goal_Psi = np.arctan2(dx, dy) * 180 / np.pi - boat.psi
-        Goal_Psi = normalize_angle(Goal_Psi)
-        Goal_Distance = np.sqrt(np.power(dx, 2) + np.power(dy, 2))
-
 
         return [psi_error, tauX]
     else:
@@ -153,7 +122,7 @@ def pathplan(boat=Boat(), goal_x=None, goal_y=None):
 
     
 
-def goal_check(boat = Boat()):
+def goal_check(boat = Boat(), goal_distance = None, goal_psi = None):
     """
     목적지 까지 경로에 장애물이 있는지 판단하는 함수
 
@@ -163,14 +132,14 @@ def goal_check(boat = Boat()):
     Returns:
         장애물이 있는지 판단 결과를 리턴 [Boolean]
     """
-    l = Goal_Distance
+    l = goal_distance
     theta = ceil(np.degrees(np.arctan2(SETTINGS.BOAT_WIDTH/2, l)))
 
     check_ld = [0] * 360
     isAble = True
 
     for i in range(0, 90 - theta):
-        angle = normalize_angle(int(Goal_Psi) - 90 + i)
+        angle = normalize_angle(int(goal_psi) - 90 + i)
         r = SETTINGS.BOAT_WIDTH /(2 *np.cos(np.radians(i)))
         check_ld[angle] = r
         if(boat.scan[angle] == 0):
@@ -179,12 +148,12 @@ def goal_check(boat = Boat()):
             isAble = False
 
     for i in range(-theta, theta + 1):
-        check_ld[normalize_angle(int(Goal_Psi) + i)] = l
-        if(boat.scan[normalize_angle(int(Goal_Psi) + i)] < l):
+        check_ld[normalize_angle(int(goal_psi) + i)] = l
+        if(boat.scan[normalize_angle(int(goal_psi) + i)] < l):
             isAble = False
 
     for i in range(0, 90 - theta):
-        angle = normalize_angle(int(Goal_Psi) + 90 - i)
+        angle = normalize_angle(int(goal_psi) + 90 - i)
         r = SETTINGS.BOAT_WIDTH /(2 *np.cos(np.radians(i)))
         check_ld[angle] = r
         if(boat.scan[angle] == 0):

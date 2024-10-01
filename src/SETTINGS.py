@@ -8,7 +8,7 @@ ref_gps_x, ref_gps_y = 127.401794, 36.395991
 
 ref_utm_x, ref_utm_y, _, _ = utm.from_latlon(ref_gps_y, ref_gps_x)
 
-isSimulator = False
+isSimulator = True
 if(isSimulator==False):
 
     """
@@ -39,14 +39,14 @@ else:
     """ 
         시뮬레이터의 파라미터 값 
     """ 
-    BOAT_WIDTH = 1.3
-    AVOID_RANGE = 7
+    BOAT_WIDTH = 0.4
+    AVOID_RANGE = 3
     GAIN_PSI = 1
-    GAIN_DISTANCE = 8
-    GoalRange = 2
+    GAIN_DISTANCE = 0.5
+    GoalRange = 1.5
 
-    Kp = 10.0  # 비례 계수
-    Kd = 1  # 미분 계수
-    maxSaturation = 250
+    Kp = 6
+    Kd = 3
+    maxSaturation = 500
 
 
