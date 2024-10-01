@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="kaboat2024" type="IMUPublish.py" name="PSI"/>
+    <node pkg="kaboat2024" type="UTMPublish.py" name="UTM"/>
+</launch>

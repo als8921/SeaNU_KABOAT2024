@@ -35,9 +35,9 @@
     <!-- LiDAR Connect -->
     <include file="$(find livox_ros_driver2)/launch_ROS1/rviz_MID360.launch"/>
     
-    <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
+    <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager"/>
     
-    <node pkg="nodelet" type="nodelet" name="voxel_grid" args="load pcl/VoxelGrid pcl_manager" output="screen">
+    <node pkg="nodelet" type="nodelet" name="voxel_grid" args="load pcl/VoxelGrid pcl_manager">
         <remap from="~input" to="/livox/lidar" />
         <rosparam>
             filter_field_name: z
@@ -64,7 +64,5 @@
     </node>
 
     <!-- IMU and UTM Nodes -->
-    <node pkg="kaboat2024" type="IMUCalibration.py" name="CALIBRATION"/>
-    <node pkg="kaboat2024" type="IMUPublish.py" name="PSI"/>
-    <node pkg="kaboat2024" type="UTMPublish.py" name="UTM"/>
+    <node pkg="kaboat2024" type="IMUCalibration.py" name="CALIBRATION" output="screen"/>
 </launch>

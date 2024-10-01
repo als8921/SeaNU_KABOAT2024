@@ -23,6 +23,7 @@ class ImuCalibration:
                 self.calibrate_bias()
                 self.calibrated = True
         else:
+            print("IMU CALIBRATION DONE")
             data.linear_acceleration.x -= self.bias_x
             data.linear_acceleration.y -= self.bias_y
             data.linear_acceleration.z -= self.bias_z
