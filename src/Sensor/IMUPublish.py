@@ -44,6 +44,7 @@ if __name__ == '__main__':
     pub = rospy.Publisher('KABOAT/Heading', Float32, queue_size=100)
     # rospy.Subscriber('/filter/quaternion', QuaternionStamped, callback)
     # rospy.Subscriber('/handsfree/imu', Imu, callback)
+    rospy.Subscriber('/imu/data_calibrated', Imu, callback)
     # rospy.Subscriber('/imu/data', Imu, callback)
-    rospy.Subscriber('/smc_plus/navrelposned',NavRELPOSNED, HEADcallback)
+    # rospy.Subscriber('/smc_plus/navrelposned',NavRELPOSNED, HEADcallback)
     rospy.spin()
