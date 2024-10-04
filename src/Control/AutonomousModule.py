@@ -118,12 +118,12 @@ def pathplan(boat=Boat(), goal_x=None, goal_y=None):
 
 
         Tx_dist_min = 50
-        Tx_dist_max = 200
+        Tx_dist_max = 100
         dist_danger = 1.5
         dist_safe = 7
 
         Tx_angle_min = 50
-        Tx_angle_max = 200
+        Tx_angle_max = 100
         angle_danger = 90
 
 
