@@ -1,0 +1,18 @@
+<launch>
+    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+        <remap from="cloud_in" to="/voxel_grid/output"/>
+        <remap from="scan" to="/test"/>
+        <rosparam>
+            angle_max: 3.14159
+            angle_min: -3.14159
+            max_height: 0.1
+            min_height: -0.5
+            range_min: 0.3
+            use_inf: true
+            inf_epsilon: -1
+        </rosparam>
+    </node>
+
+    <!-- IMU and UTM Nodes -->
+    <!-- <node pkg="kaboat2024" type="IMUCalibration.py" name="CALIBRATION" output="screen"/> -->
+</launch>
