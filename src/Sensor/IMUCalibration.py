@@ -11,7 +11,7 @@ class ImuCalibration:
         self.bias_z = 0.0
         self.calibrated = False
         self.samples = []
-        self.sample_count = 100  # Number of samples for calibration
+        self.sample_count = 1000  # Number of samples for calibration
         rospy.Subscriber("/handsfree/imu", Imu, self.calibration_callback)
         self.pub = rospy.Publisher("/imu/data_calibrated", Imu, queue_size=10)
 

@@ -99,8 +99,12 @@ def pathplan(boat=Boat(), goal_x=None, goal_y=None):
     
     ## TauX를 계산하는 부분
     if goal_check(boat, Goal_Distance, Goal_Psi):
-        tauX = min((Goal_Distance ** 4) + 200, 500)
-        print(f"전진 속도 {tauX}")
+        tauX = 150
+        psi_error = Goal_Psi
+        if(abs(psi_error) < 5):
+            tauX = min((Goal_Distance ** 4) + 100, 500)
+
+        # print(f"전진 속도 {tauX}")
     else:
         # TauX_Gain_Dist = 0.3
         # TauX_Gain_Angle = 0.7
@@ -114,13 +118,13 @@ def pathplan(boat=Boat(), goal_x=None, goal_y=None):
 
 
         Tx_dist_min = 50
-        Tx_dist_max = 100
+        Tx_dist_max = 200
         dist_danger = 1.5
         dist_safe = 7
 
         Tx_angle_min = 50
-        Tx_angle_max = 100
-        angle_danger = 45
+        Tx_angle_max = 200
+        angle_danger = 90
 
 
         Dist = boat.scan[0]

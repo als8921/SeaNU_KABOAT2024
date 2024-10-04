@@ -9,8 +9,10 @@ from math import pi
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import QuaternionStamped
 from ublox_msgs.msg import NavRELPOSNED
+i = 0
+drift = 0.03
 
-bias = 0
+bias = 60 - 9.7 + 103.4 -44+66+14+7+7+12
 def normalize_angle(angle): return (angle + 180) % 360 - 180
 
 #############
@@ -21,8 +23,10 @@ def getYaw(q):
     return yaw
 
 def callback(msg):
+    global i
+    i += 1
     data = Float32()
-    data.data = normalize_angle(getYaw(msg.orientation) + bias)
+    data.data = normalize_angle(getYaw(msg.orientation) + bias + drift * i)
     # data.data = normalize_angle(getYaw(msg.quaternion))
     print("Psi : {0:0.1f}" .format(data.data))
     pub.publish(data)
@@ -44,7 +48,8 @@ if __name__ == '__main__':
     pub = rospy.Publisher('KABOAT/Heading', Float32, queue_size=100)
     # rospy.Subscriber('/filter/quaternion', QuaternionStamped, callback)
     # rospy.Subscriber('/handsfree/imu', Imu, callback)
-    rospy.Subscriber('/imu/data_calibrated', Imu, callback)
-    # rospy.Subscriber('/imu/data', Imu, callback)
+    # rospy.Subscriber('/corrected', Imu, callback)
+    # rospy.Subscriber('/imu/data_calibrated', Imu, callback)
+    rospy.Subscriber('/imu/data', Imu, callback)
     # rospy.Subscriber('/smc_plus/navrelposned',NavRELPOSNED, HEADcallback)
     rospy.spin()

@@ -1,14 +1,19 @@
 import utm
 
 """ 삼성중공업 """
-ref_gps_x, ref_gps_y = 127.401794, 36.395991
+# ref_gps_x, ref_gps_y = 127.401794, 36.395991
 
 """ 충남대학교 """
 # ref_gps_x, ref_gps_y= 127.345411, 36.368706
 
+
+""" 대회장 """
+
+ref_gps_x, ref_gps_y = 128.578874, 35.0696553
+
 ref_utm_x, ref_utm_y, _, _ = utm.from_latlon(ref_gps_y, ref_gps_x)
 
-isSimulator = True
+isSimulator = False
 if(isSimulator==False):
 
     """
@@ -22,7 +27,7 @@ if(isSimulator==False):
     BOAT_WIDTH = 0.4
     AVOID_RANGE = 3
     GAIN_PSI = 1
-    GAIN_DISTANCE = 1
+    GAIN_DISTANCE = 0.5
     GoalRange = 2
 
     """

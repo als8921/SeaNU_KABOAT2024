@@ -2,17 +2,17 @@
 
 <launch>
     <!-- HANDSFREE IMU -->
-    <arg name="imu_type" default="a9" doc="imu_type [a9, b9, b6]"/>
+    <!-- <arg name="imu_type" default="a9" doc="imu_type [a9, b9, b6]"/>
     <node pkg="handsfree_ros_imu" type="hfi_$(arg imu_type)_ros.py" name="imu" output="screen">
         <param name="port"               type = "str"    value="/dev/ttyUSB0"/>
         <param name="gra_normalization"  type = "bool"   value="True" if="$(eval imu_type == 'a9')"/>
-    </node>
+    </node> -->
 
     <!-- Include NTRIP configuration -->
-    <!-- <include file="$(find ublox_gps)/launch/ublox_device.launch">
+    <include file="$(find ublox_gps)/launch/ublox_device.launch">
     </include>
 
-    <node pkg="ntrip_ros" type="ntripclient.py" name="ntrip_ros" output="screen">
+    <!-- <node pkg="ntrip_ros" type="ntripclient.py" name="ntrip_ros" output="screen">
         <param name="rtcm_topic" value="/ublox_gps/rtcm"/>
         <param name="ntrip_server" value="RTS1.ngii.go.kr:2101"/>
         <param name="ntrip_user" value="andy42490"/>
@@ -21,10 +21,10 @@
         <param name="nmea_gga" value="$GPGGA,114817.301,3621.900,N,12720.789,E,1,12,1.0,0.0,M,0.0,M,,*69"/>
     </node> -->
 
-    <!-- <node  name="xsens_mti_node" pkg="xsens_mti_driver" type="xsens_mti_node" output="screen">
+    <node  name="xsens_mti_node" pkg="xsens_mti_driver" type="xsens_mti_node" output="screen">
         <rosparam command="load" file="$(find xsens_mti_driver)/param/xsens_mti_node.yaml" />
         <param name="port" type="str" value="/dev/ttyUSB0"/>
-    </node> -->
+    </node>
 
     <!-- First GPS Node -->
     <include file="$(find ublox_gps)/launch/ublox_zed-f9p_base.launch"/>
@@ -64,5 +64,5 @@
     </node>
 
     <!-- IMU and UTM Nodes -->
-    <node pkg="kaboat2024" type="IMUCalibration.py" name="CALIBRATION" output="screen"/>
+    <!-- <node pkg="kaboat2024" type="IMUCalibration.py" name="CALIBRATION" output="screen"/> -->
 </launch>
