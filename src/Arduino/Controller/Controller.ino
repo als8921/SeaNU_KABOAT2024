@@ -12,8 +12,8 @@
 ////////////////////////////////////////////////////////////////////
 // PARAMETERS
 const int maxSaturation = 450;
-const int maxFrontSaturation = 250; // Front Thruster max값
-const int maxDiffSaturation = 350; // L R 차이 최대값
+const int maxFrontSaturation = 230; // Front Thruster max값
+const int maxDiffSaturation = 400; // L R 차이 최대값
 
 const float LPF_Alpha = 0.5; // 필터 계수
 const int LEDBright = 20;

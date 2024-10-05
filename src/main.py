@@ -135,25 +135,30 @@ def main():
     # Autonomous(-15.354178238951135, -6.478271604515612)
     # Autonomous(0.9966924921027385, -36.02468355698511)
 
-
+    # Tuning(0)
     ###############################################
     # 메인 경기장
-    Autonomous(7.93, -29.33, 1.5)
+    Autonomous(6.92633210652275, -30.96493609342724, 1.5)
     Wait(2)
-    Autonomous(12.73, -30.68, 1.5)
-    Rotate(-30)
-    Wait(2)
+    Autonomous(11.367798224033322, -29.614067806396633, 1.5)
+    Rotate(-17)
 
     mission_2_index = 1
     if mission_2_index == 1:
-        Autonomous(10.65, -26.43, 1) # mission2 첫 번째 입구
-        Autonomous(8.21, -18.14, 1) # mission2 첫 번째 입구
+        Autonomous(9.465563243546057, -27.737363590393215, 1)
+        Autonomous(6.709498732059728, -19.69653245760128, 1)
+        # Autonomous(10.65, -26.43, 1) # mission2 첫 번째 입구
+        # Autonomous(8.21, -18.14, 1) # mission2 첫 번째 입구
     elif mission_2_index == 2:
-        Autonomous(12.56, -25.65, 1) # mission2 두 번째 입구
-        Autonomous(9.72, -17.94, 1) # mission2 두 번째 입구
+        Autonomous(10.648695708310697, -27.171221407596022, 1)
+        # Autonomous(12.56, -25.65, 1) # mission2 두 번째 입구
+        Autonomous(8.264857014233712, -19.509023894090205, 1)
+        # Autonomous(9.72, -17.94, 1) # mission2 두 번째 입구
     elif mission_2_index == 3:
-        Autonomous(13.69, -25.42, 1) # mission3 세 번째 입구
-        Autonomous(10.99, -17.27, 1) # mission3 세 번째 입구
+        Autonomous(11.950871016364545, -26.48359113559127, 1)
+        Autonomous(9.60564893251285, -19.3926944504492, 1)
+        # Autonomous(13.69, -25.42, 1) # mission3 세 번째 입구
+        # Autonomous(10.99, -17.27, 1) # mission3 세 번째 입구
 
     Autonomous(8.57, -16.35)
     Wait(2)

@@ -24,10 +24,10 @@ if(isSimulator==False):
         GAIN_PSI        목적지와 배의 상대각도
         GAIN_DISTANCE   각도의 LaserScan값
     """
-    BOAT_WIDTH = 0.4
+    BOAT_WIDTH = 0.6
     AVOID_RANGE = 3
     GAIN_PSI = 1
-    GAIN_DISTANCE = 0.5
+    GAIN_DISTANCE = 0.3
     GoalRange = 2
 
     """
@@ -37,9 +37,10 @@ if(isSimulator==False):
         Kd              미분 계수
         maxSaturation   모터 최대 출력
     """
-    Kp = 6
-    Kd = 3
-    maxSaturation = 400
+    ### 5, 3.5
+    Kp = 5
+    Kd = 4
+    maxSaturation = 300
 else:
     """ 
         시뮬레이터의 파라미터 값 

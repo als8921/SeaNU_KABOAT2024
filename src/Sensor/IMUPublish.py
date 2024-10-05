@@ -12,7 +12,7 @@ from ublox_msgs.msg import NavRELPOSNED
 i = 0
 drift = 0.03
 
-bias = 60 - 9.7 + 103.4 -44+66+14+7+7+12
+bias = -95
 def normalize_angle(angle): return (angle + 180) % 360 - 180
 
 #############
@@ -33,11 +33,11 @@ def callback(msg):
 
 ##############################IMU로 heading검출
 
-pre_head = -90
+pre_head = -90 + 7
 def HEADcallback(msg):
     global pre_head
     if(msg.relPosHeading != 0):
-        head = normalize_angle(float(msg.relPosHeading)/100000+bias)        
+        head = normalize_angle(float(msg.relPosHeading)/100000+pre_head)        
         print(head)
         pub.publish(Float32(data = head))
 
@@ -50,6 +50,6 @@ if __name__ == '__main__':
     # rospy.Subscriber('/handsfree/imu', Imu, callback)
     # rospy.Subscriber('/corrected', Imu, callback)
     # rospy.Subscriber('/imu/data_calibrated', Imu, callback)
-    rospy.Subscriber('/imu/data', Imu, callback)
-    # rospy.Subscriber('/smc_plus/navrelposned',NavRELPOSNED, HEADcallback)
+    # rospy.Subscriber('/imu/data', Imu, callback)
+    rospy.Subscriber('/smc_plus/navrelposned',NavRELPOSNED, HEADcallback)
     rospy.spin()
