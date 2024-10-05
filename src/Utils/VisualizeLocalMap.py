@@ -38,19 +38,19 @@ def update(frame):
 
     # Waypoint 데이터 표시
     if waypoints:
-        waypoint_x = [(point[0]-gps_position[0]) for point in waypoints]
-        waypoint_y = [(point[1]-gps_position[1]) for point in waypoints]
-
+        waypoint_x = waypoints[0]-gps_position[0]
+        waypoint_y = waypoints[1]-gps_position[1]
+        print(waypoints)
         # Waypoint 점으로 표시
         ax.scatter(np.radians(np.arctan2(waypoint_x, waypoint_y) * 180 / np.pi - heading_angle), 
                     np.sqrt(np.power(waypoint_x, 2) + np.power(waypoint_y, 2)), 
                     color='red', label='Waypoints')  
 
-        # 각 Waypoint에 인덱스 번호 텍스트 추가
-        for idx, (wx, wy) in enumerate(zip(waypoint_x, waypoint_y)):
-            angle = np.radians(np.arctan2(wx, wy) * 180 / np.pi - heading_angle)
-            distance = np.sqrt(np.power(wx, 2) + np.power(wy, 2))
-            ax.text(angle, distance, str(idx + 1), color='black', fontsize=8, ha='center', va='bottom')
+        # # 각 Waypoint에 인덱스 번호 텍스트 추가
+        # for (wx, wy) in waypoints:
+        #     angle = np.radians(np.arctan2(wx, wy) * 180 / np.pi - heading_angle)
+        #     distance = np.sqrt(np.power(wx, 2) + np.power(wy, 2))
+        #     ax.text(angle, distance, "WP", color='black', fontsize=8, ha='center', va='bottom')
 
     # Waypoint 각도 표시
     ax.plot([0, np.radians(psi_error)], [0, 15], color='green', label='Waypoint Angle')  # 각도는 고정된 거리에서 표시
@@ -75,10 +75,15 @@ def simulator_laser_scan_callback(data):
 
 def waypoint_callback(data):
     global waypoints
-    if(data.point.z == -1):
-        waypoints = []
-    else:
-        waypoints.append([data.point.x, data.point.y])
+    if(data.data[0] == 0):
+        waypoints = [data.data[1], data.data[2]]
+    elif(data.data[0] == 1):
+        waypoints = [data.data[1], data.data[2]]
+    elif(data.data[0] == 2):
+        waypoints = [data.data[1], data.data[2]]
+
+
+    print(waypoints)
 
 def waypoint_angle_callback(data):
     global psi_error
@@ -106,8 +111,8 @@ def listener():
     imu_sub = message_filters.Subscriber("KABOAT/Heading", Float32)
 
     # Waypoint 및 Waypoint Angle 토픽 구독
-    rospy.Subscriber("/Waypoint", PointStamped, waypoint_callback)
     rospy.Subscriber("/command", Float32MultiArray, waypoint_angle_callback)
+    rospy.Subscriber("/waypoint", Float32MultiArray, waypoint_callback)
 
     ts = message_filters.ApproximateTimeSynchronizer([gps_sub, imu_sub], queue_size=10, slop=0.1, allow_headerless=True)
     ts.registerCallback(lambda gps_data, imu_data: (gps_callback(gps_data), imu_callback(imu_data)))

@@ -13,7 +13,7 @@ ref_gps_x, ref_gps_y = 128.578874, 35.0696553
 
 ref_utm_x, ref_utm_y, _, _ = utm.from_latlon(ref_gps_y, ref_gps_x)
 
-isSimulator = False
+isSimulator = True
 if(isSimulator==False):
 
     """

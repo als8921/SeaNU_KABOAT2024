@@ -49,10 +49,11 @@ def loginfoOnce(s):
         pastPrint = s
 
 def ros_init():
-    global command_publish
+    global command_publish, waypoint_publish
     rospy.init_node('main_node', anonymous=True)
 
     command_publish = rospy.Publisher('/command', Float32MultiArray, queue_size=10)
+    waypoint_publish = rospy.Publisher('waypoint', Float32MultiArray, queue_size=10)
 
     if SETTINGS.isSimulator:
         rospy.Subscriber("Lidar", Float64MultiArray, CallBack.simulator_laser_scan_callback)
@@ -77,10 +78,12 @@ def Autonomous(goal_x,goal_y, goal_range = SETTINGS.GoalRange):
         if AutonomousModule.goal_passed(boat, goal_x, goal_y, goal_range):
 
             command_publish.publish(Float32MultiArray(data=[0, 0]))
+            waypoint_publish.publish(Float32MultiArray(data = [0, boat.position[0], boat.position[1]]))
             rospy.loginfo(f"[Autonomous Mode] [{goal_x:.2f}, {goal_y:.2f}] Arrived")
             break
         else:
             command_publish.publish(Float32MultiArray(data=path))
+            waypoint_publish.publish(Float32MultiArray(data = [0, goal_x, goal_y]))
         rate.sleep()
     rospy.loginfo(f"[{goal_x}, {goal_y}]  AUTONOMOUS MODE FINISH")
 
@@ -92,6 +95,7 @@ def Rotate(goal_psi):
         path = AutonomousModule.rotate(boat, goal_psi)
 
         command_publish.publish(Float32MultiArray(data=path))
+        waypoint_publish.publish(Float32MultiArray(data = [1, boat.position[0], boat.position[1]]))
 
         if abs(path[0])<10:
             print(boat.psi ,path[0])
@@ -104,9 +108,10 @@ def Rotate(goal_psi):
 
 def Wait(wait_time):
     rate = rospy.Rate(10)
-    rospy.loginfo(f"{wait_time}[s] WAIT START")
+    rospy.loginfo(f"{wait_time}[s] WAIT START") 
     for _ in range(10 * wait_time):
         command_publish.publish(Float32MultiArray(data=[0,0]))
+        waypoint_publish.publish(Float32MultiArray(data = [2, boat.position[0], boat.position[1]]))
         rate.sleep()
 
     rospy.loginfo(f"{wait_time}[s] WAIT FINISH")
@@ -138,25 +143,25 @@ def main():
     # Tuning(0)
     ###############################################
     # 메인 경기장
-    Autonomous(6.92633210652275, -30.96493609342724, 1.5)
-    Wait(2)
-    Autonomous(11.367798224033322, -29.614067806396633, 1.5)
-    Rotate(-17)
+    # Autonomous(6.92633210652275, -30.96493609342724, 1.5)
+    # Wait(2)
+    # Autonomous(11.367798224033322, -29.614067806396633, 1.5)
+    # Rotate(-17)
 
-    mission_2_index = 1
-    if mission_2_index == 1:
-        Autonomous(9.465563243546057, -27.737363590393215, 1)
-        Autonomous(6.709498732059728, -19.69653245760128, 1)
-        # Autonomous(10.65, -26.43, 1) # mission2 첫 번째 입구
-        # Autonomous(8.21, -18.14, 1) # mission2 첫 번째 입구
-    elif mission_2_index == 2:
-        Autonomous(10.648695708310697, -27.171221407596022, 1)
-        # Autonomous(12.56, -25.65, 1) # mission2 두 번째 입구
-        Autonomous(8.264857014233712, -19.509023894090205, 1)
-        # Autonomous(9.72, -17.94, 1) # mission2 두 번째 입구
-    elif mission_2_index == 3:
-        Autonomous(11.950871016364545, -26.48359113559127, 1)
-        Autonomous(9.60564893251285, -19.3926944504492, 1)
+    # mission_2_index = 1
+    # if mission_2_index == 1:
+    #     Autonomous(9.465563243546057, -27.737363590393215, 1)
+    #     Autonomous(6.709498732059728, -19.69653245760128, 1)
+    #     # Autonomous(10.65, -26.43, 1) # mission2 첫 번째 입구
+    #     # Autonomous(8.21, -18.14, 1) # mission2 첫 번째 입구
+    # elif mission_2_index == 2:
+    #     Autonomous(10.648695708310697, -27.171221407596022, 1)
+    #     # Autonomous(12.56, -25.65, 1) # mission2 두 번째 입구
+    #     Autonomous(8.264857014233712, -19.509023894090205, 1)
+    #     # Autonomous(9.72, -17.94, 1) # mission2 두 번째 입구
+    # elif mission_2_index == 3:
+    #     Autonomous(11.950871016364545, -26.48359113559127, 1)
+    #     Autonomous(9.60564893251285, -19.3926944504492, 1)
         # Autonomous(13.69, -25.42, 1) # mission3 세 번째 입구
         # Autonomous(10.99, -17.27, 1) # mission3 세 번째 입구
 
