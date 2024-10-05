@@ -7,42 +7,38 @@ import numpy as np
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
-# 각 색상에 대한 HSV 범위 설정
-color_ranges = {
-    "Red": ([0, 75, 94], [18, 215, 234]),    # 빨강
-    "Blue": ([99, 132, 97], [129, 255, 237]),   # 파랑
-    "Black": ([111, 0, 0], [141, 104, 108]),     # 검정
-    "White": ([75, 0, 185], [105, 74, 255])     # white
-}
-
-# 각 색상 범위를 NumPy 배열로 변환
-color_ranges = {key: [np.array(lower), np.array(upper)] for key, (lower, upper) in color_ranges.items()}
-
 # CvBridge와 전역 변수 설정
 bridge = CvBridge()
 cv_image = None
 
-# HSV 범위에 따라 색상 인식 함수
-def detect_color(hsv_pixel):
-    for color_name, (lower_hsv, upper_hsv) in color_ranges.items():
-        # 픽셀 값이 해당 색상의 범위에 있는지 확인
-        if all(lower_hsv <= hsv_pixel) and all(hsv_pixel <= upper_hsv):
-            return color_name
-    return "Unknown"
-
-# 마우스 클릭 이벤트 콜백 함수
+# HSV 값 출력 콜백 함수
 def click_event(event, x, y, flags, param):
-    global cv_image
     if event == cv2.EVENT_LBUTTONDOWN and cv_image is not None:  # 왼쪽 버튼 클릭 시
         # 클릭한 좌표의 색상 값 가져오기 (BGR 형식)
         pixel = cv_image[y, x]
         
         # BGR을 HSV로 변환
-        hsv_pixel = cv2.cvtColor(np.uint8([[pixel]]), cv2.COLOR_BGR2HSV)[0][0]
+        pixel_hsv = cv2.cvtColor(np.uint8([[pixel]]), cv2.COLOR_BGR2HSV)[0][0]
+        h, s, v = pixel_hsv
+
+        # 주황색과 빨간색을 구분하기 위한 조건
+        if 0 <= h <= 15 or 160 <= h <= 180:  # 빨간색 범위
+            lower_hsv = np.array([max(0, h - 10), max(50, s - 50), max(50, v - 50)])
+            upper_hsv = np.array([min(180, h + 10), min(255, s + 50), min(255, v + 50)])
+        elif 15 < h <= 30:  # 주황색 범위
+            lower_hsv = np.array([max(0, h - 10), max(50, s - 50), max(50, v - 50)])
+            upper_hsv = np.array([min(180, h + 10), min(255, s + 50), min(255, v + 50)])
+        else:
+            # 기본 범위 설정
+            lower_hsv = np.array([max(0, h - 15), max(0, s - 70), max(0, v - 70)])
+            upper_hsv = np.array([min(180, h + 15), min(255, s + 70), min(255, v + 70)])
         
-        # 터미널에 출력 (해당 색상 이름 표시)
-        detected_color = detect_color(hsv_pixel)
-        print(f"Detected Color at ({x}, {y}): {detected_color}, HSV: {hsv_pixel}")
+        # 터미널에 복사 붙여넣기 가능한 형식으로 출력
+        print(f"[{lower_hsv[0]}, {lower_hsv[1]}, {lower_hsv[2]}], "
+              f"[{upper_hsv[0]}, {upper_hsv[1]}, {upper_hsv[2]}]")
+        
+        print(f"HSV {pixel_hsv}")
+
 
 # 이미지 콜백 함수
 def img_callback(data):
@@ -55,7 +51,7 @@ def img_callback(data):
 
 def main():
     # ROS 노드 초기화
-    rospy.init_node('color_detector_node', anonymous=True)
+    rospy.init_node('image_processor_node', anonymous=True)
 
     # 토픽 구독 설정
     rospy.Subscriber("/usb_cam/image_raw", Image, img_callback)
