@@ -8,6 +8,9 @@ from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge
 from std_msgs.msg import Float32  # 퍼블리시할 메시지 타입
 
+input_color = 'Orange'
+input_shape = 'Cross'
+
 # 각 색상에 대한 HSV 범위 설정
 color_ranges = {
     "Red": ([0, 106, 162], [14, 206, 255]),    # 빨강
@@ -95,8 +98,6 @@ def image_callback(data):
         print("Error in image conversion:", e)
         return
 
-    input_color = 'Orange'
-    input_shape = 'Cross'
     x_coordinate = process_image(cv_image, input_color, input_shape)
 
     if x_coordinate is not None:
