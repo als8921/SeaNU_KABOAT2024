@@ -66,7 +66,7 @@ def ros_init():
     ts = message_filters.ApproximateTimeSynchronizer([gps_sub, imu_sub], queue_size=10, slop=0.1, allow_headerless=True)
     ts.registerCallback(lambda gps_data, imu_data: (CallBack.gps_callback(gps_data), CallBack.imu_callback(imu_data)))
 
-def Autonomous(goal_x,goal_y, goal_range = SETTINGS.GoalRange):
+def Autonomous(goal_x,goal_y, goal_range = SETTINGS.GoalRange, maxSaturation = SETTINGS.maxSaturation):
     rate = rospy.Rate(10)
     rospy.loginfo(f"[{goal_x}, {goal_y}]  AUTONOMOUS MODE START")
     while not rospy.is_shutdown():
@@ -77,24 +77,25 @@ def Autonomous(goal_x,goal_y, goal_range = SETTINGS.GoalRange):
 
         if AutonomousModule.goal_passed(boat, goal_x, goal_y, goal_range):
 
-            command_publish.publish(Float32MultiArray(data=[0, 0]))
+            command_publish.publish(Float32MultiArray(data=[0, 0, 0]))
             waypoint_publish.publish(Float32MultiArray(data = [0, boat.position[0], boat.position[1]]))
             rospy.loginfo(f"[Autonomous Mode] [{goal_x:.2f}, {goal_y:.2f}] Arrived")
             break
         else:
-            command_publish.publish(Float32MultiArray(data=path))
+            temp = [path[0], path[1], maxSaturation]
+            command_publish.publish(Float32MultiArray(data=temp))
             waypoint_publish.publish(Float32MultiArray(data = [0, goal_x, goal_y]))
         rate.sleep()
     rospy.loginfo(f"[{goal_x}, {goal_y}]  AUTONOMOUS MODE FINISH")
 
 
-def Rotate(goal_psi):
+def Rotate(goal_psi, maxSaturation = SETTINGS.maxSaturation):
     rate = rospy.Rate(10)
     rospy.loginfo(f"{goal_psi}[deg] Rotate START")
     while not rospy.is_shutdown():
         path = AutonomousModule.rotate(boat, goal_psi)
-
-        command_publish.publish(Float32MultiArray(data=path))
+        temp = [path[0], path[1], maxSaturation]
+        command_publish.publish(Float32MultiArray(data=temp))
         waypoint_publish.publish(Float32MultiArray(data = [1, boat.position[0], boat.position[1]]))
 
         if abs(path[0])<10:
@@ -110,7 +111,7 @@ def Wait(wait_time):
     rate = rospy.Rate(10)
     rospy.loginfo(f"{wait_time}[s] WAIT START") 
     for _ in range(10 * wait_time):
-        command_publish.publish(Float32MultiArray(data=[0,0]))
+        command_publish.publish(Float32MultiArray(data=[0, 0, 0]))
         waypoint_publish.publish(Float32MultiArray(data = [2, boat.position[0], boat.position[1]]))
         rate.sleep()
 
@@ -143,7 +144,7 @@ def main():
     # Tuning(0)
     ###############################################
     # 메인 경기장
-    Autonomous(6.92633210652275, -30.96493609342724, 2.5)
+    """Autonomous(6.92633210652275, -30.96493609342724, 2.5)
     Wait(2)
     Autonomous(11.367798224033322, -29.614067806396633, 2)
     Rotate(-17)
@@ -170,37 +171,38 @@ def main():
 
     Autonomous(2.29, 2.84)
 
-    Autonomous(-2.30, 1.20)
+    Autonomous(-2.30, 1.20)"""
 
     ###############################################
     # 시뮬레이터
-    # Autonomous(33, 1.5)
-    # Rotate(0)
-    # Wait(2)
-    # Autonomous(33, 8.5, 0.5)
-    # Rotate(-90)
-    # Wait(2)
+    Autonomous(33, 1.5, 2, 500)
+    Rotate(0)
+    Wait(2)
 
-    # mission_2_index = 2
-    # if mission_2_index == 1:
-    #     Autonomous(32, 4.9, 1) # mission2 첫 번째 입구
-    #     Autonomous(17, 4.9, 1.2) # mission2 첫 번째 입구
-    # elif mission_2_index == 2:
-    #     Autonomous(32, 6.5, 1) # mission2 두 번째 입구
-    #     Autonomous(17, 6.5, 1.2) # mission2 두 번째 입구
-    # elif mission_2_index == 3:
-    #     Autonomous(32, 8.3, 1) # mission3 세 번째 입구
-    #     Autonomous(17, 8.3, 1.2) # mission3 세 번째 입구
+    Autonomous(33, 8.5, 0.5, 200)
+    Rotate(-90)
+    Wait(2)
 
-    # Autonomous(15.5, 6.5)
-    # Rotate(-90)
-    # Wait(2)
-    # Autonomous(0, 6.5)
-    # Rotate(180)
-    # Wait(2)
-    # Autonomous(0, 0)
-    # Rotate(90)
-    # print("MISSION CLEAR")
+    mission_2_index = 2
+    if mission_2_index == 1:
+        Autonomous(32, 4.9, 1) # mission2 첫 번째 입구
+        Autonomous(17, 4.9, 1.2, 500) # mission2 첫 번째 입구
+    elif mission_2_index == 2:
+        Autonomous(32, 6.5, 1) # mission2 두 번째 입구
+        Autonomous(17, 6.5, 1.2, 500) # mission2 두 번째 입구
+    elif mission_2_index == 3:
+        Autonomous(32, 8.3, 1) # mission3 세 번째 입구
+        Autonomous(17, 8.3, 1.2, 500) # mission3 세 번째 입구
+
+    Autonomous(15.5, 6.5, 200)
+    Rotate(-90)
+    Wait(2)
+    Autonomous(0, 6.5)
+    Rotate(180)
+    Wait(2)
+    Autonomous(0, 0)
+    Rotate(90)
+    print("MISSION CLEAR")
     
     ###############################################
 

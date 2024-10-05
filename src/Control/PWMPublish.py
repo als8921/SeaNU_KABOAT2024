@@ -29,9 +29,15 @@ class MotorController:
         pwmR = tauX - tauN * 0.5
         pwmF = -tauN
 
-        control_values.data[0] = max(-SETTINGS.maxSaturation, min(SETTINGS.maxSaturation, int(pwmL)))
-        control_values.data[1] = max(-SETTINGS.maxSaturation, min(SETTINGS.maxSaturation, int(pwmR)))
-        control_values.data[2] = max(-SETTINGS.maxSaturation, min(SETTINGS.maxSaturation, int(pwmF)))
+        if(data.data[2] == 0):
+            control_values.data[0] = max(-SETTINGS.maxSaturation, min(SETTINGS.maxSaturation, int(pwmL)))
+            control_values.data[1] = max(-SETTINGS.maxSaturation, min(SETTINGS.maxSaturation, int(pwmR)))
+            control_values.data[2] = max(-SETTINGS.maxSaturation, min(SETTINGS.maxSaturation, int(pwmF)))
+        else:
+            control_values.data[0] = int(max(-data.data[2], min(data.data[2], int(pwmL))))
+            control_values.data[1] = int(max(-data.data[2], min(data.data[2], int(pwmR))))
+            control_values.data[2] = int(max(-data.data[2], min(data.data[2], int(pwmF))))
+
 
         if(psi_error == 0 and tauX == 0):
             control_values.data = [0, 0, 0]
