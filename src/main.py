@@ -143,58 +143,49 @@ def main():
     # Tuning(0)
     ###############################################
     # 메인 경기장
-    # Autonomous(6.92633210652275, -30.96493609342724, 1.5)
-    # Wait(2)
-    # Autonomous(11.367798224033322, -29.614067806396633, 1.5)
-    # Rotate(-17)
+    Autonomous(6.92633210652275, -30.96493609342724, 2.5)
+    Wait(2)
+    Autonomous(11.367798224033322, -29.614067806396633, 2)
+    Rotate(-17)
 
-    # mission_2_index = 1
-    # if mission_2_index == 1:
-    #     Autonomous(9.465563243546057, -27.737363590393215, 1)
-    #     Autonomous(6.709498732059728, -19.69653245760128, 1)
-    #     # Autonomous(10.65, -26.43, 1) # mission2 첫 번째 입구
-    #     # Autonomous(8.21, -18.14, 1) # mission2 첫 번째 입구
-    # elif mission_2_index == 2:
-    #     Autonomous(10.648695708310697, -27.171221407596022, 1)
-    #     # Autonomous(12.56, -25.65, 1) # mission2 두 번째 입구
-    #     Autonomous(8.264857014233712, -19.509023894090205, 1)
-    #     # Autonomous(9.72, -17.94, 1) # mission2 두 번째 입구
-    # elif mission_2_index == 3:
-    #     Autonomous(11.950871016364545, -26.48359113559127, 1)
-    #     Autonomous(9.60564893251285, -19.3926944504492, 1)
-        # Autonomous(13.69, -25.42, 1) # mission3 세 번째 입구
-        # Autonomous(10.99, -17.27, 1) # mission3 세 번째 입구
+    mission_2_index = 3
+    if mission_2_index == 1:
+        Autonomous(9.465563243546057, -27.737363590393215, 1)
+        Autonomous(6.709498732059728, -19.69653245760128, 1)
+    elif mission_2_index == 2:
+        Autonomous(10.648695708310697, -27.171221407596022, 1)
+        Autonomous(8.264857014233712, -19.509023894090205, 1)
+    elif mission_2_index == 3:
+        Autonomous(11.950871016364545, -26.48359113559127, 1)
+        Autonomous(9.60564893251285, -19.3926944504492, 1)
 
-    # Autonomous(8.57, -16.35)
-    # Wait(2)
+    Autonomous(8.57, -16.35)
 
-    # Autonomous(4.50, -4.70)
-    # Wait(2)
+    Autonomous(4.50, -4.70)
 
-    # Autonomous(2.29, 2.84)
-    # Wait(2)
+    Autonomous(2.29, 2.84)
 
-    # Autonomous(-2.30, 1.20)
+    Autonomous(-2.30, 1.20)
 
     ###############################################
     # 시뮬레이터
     # Autonomous(33, 1.5)
     # Rotate(0)
     # Wait(2)
-    Autonomous(33, 8.5, 0.5)
-    Rotate(-90)
-    Wait(2)
+    # Autonomous(33, 8.5, 0.5)
+    # Rotate(-90)
+    # Wait(2)
 
-    mission_2_index = 2
-    if mission_2_index == 1:
-        Autonomous(32, 4.9, 1) # mission2 첫 번째 입구
-        Autonomous(17, 4.9, 1.2) # mission2 첫 번째 입구
-    elif mission_2_index == 2:
-        Autonomous(32, 6.5, 1) # mission2 두 번째 입구
-        Autonomous(17, 6.5, 1.2) # mission2 두 번째 입구
-    elif mission_2_index == 3:
-        Autonomous(32, 8.3, 1) # mission3 세 번째 입구
-        Autonomous(17, 8.3, 1.2) # mission3 세 번째 입구
+    # mission_2_index = 2
+    # if mission_2_index == 1:
+    #     Autonomous(32, 4.9, 1) # mission2 첫 번째 입구
+    #     Autonomous(17, 4.9, 1.2) # mission2 첫 번째 입구
+    # elif mission_2_index == 2:
+    #     Autonomous(32, 6.5, 1) # mission2 두 번째 입구
+    #     Autonomous(17, 6.5, 1.2) # mission2 두 번째 입구
+    # elif mission_2_index == 3:
+    #     Autonomous(32, 8.3, 1) # mission3 세 번째 입구
+    #     Autonomous(17, 8.3, 1.2) # mission3 세 번째 입구
 
     # Autonomous(15.5, 6.5)
     # Rotate(-90)
@@ -204,7 +195,7 @@ def main():
     # Wait(2)
     # Autonomous(0, 0)
     # Rotate(90)
-    print("MISSION CLEAR")
+    # print("MISSION CLEAR")
     
     ###############################################
 
