@@ -1,11 +1,16 @@
 # KABOAT2024
-충남대학교 SeaNU 2024 자율운항보트 경진대회 종합 1위
+### 충남대학교 SeaNU 2024 자율운항보트 경진대회 종합 1위
 
 ### [SeaNU 2024 자율운항보트 경진대회 유튜브 영상](https://www.youtube.com/watch?v=IwlfTJ0ziOw)
 ### [SeaNU 2024 자율운항보트 경진대회 기사](https://www.lecturernews.com/news/articleView.html?idxno=164746)
 
 # 대회 설명
 ![대회 설명](images/figure.png)
+## Mission
+1. 장애물을 피해서 목적지 까지 이동
+2. 지정된 위치에 특정 시간동안 멈추기
+3. 도형, 색깔 이미지를 인식하여 해당 통로로 이동
+4. 한 바퀴를 돌아 출발점으로 돌아오기
 
 # Hardware
 ## 센서부
