@@ -1,5 +1,5 @@
 # KABOAT2024
-### 충남대학교 SeaNU 2024 자율운항보트 경진대회 종합 1위
+### 충남대학교 SeaNU 2024 자율운항보트 경진대회 종합 1위 (산업통상자원부 장관상)
 
 ### [SeaNU 2024 자율운항보트 경진대회 유튜브 영상](https://www.youtube.com/watch?v=IwlfTJ0ziOw)
 ### [SeaNU 2024 자율운항보트 경진대회 기사](https://www.lecturernews.com/news/articleView.html?idxno=164746)
