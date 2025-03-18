@@ -4,6 +4,8 @@
 ### [SeaNU 2024 자율운항보트 경진대회 유튜브 영상](https://www.youtube.com/watch?v=IwlfTJ0ziOw)
 ### [SeaNU 2024 자율운항보트 경진대회 기사](https://www.lecturernews.com/news/articleView.html?idxno=164746)
 
+# 대회 설명
+![대회 설명](images/figure.png)
 
 # Hardware
 ## 센서부
